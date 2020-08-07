@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.wata.payslip.repository.BlackListRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +19,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
 
 	private String SECRET_KEY = "secret";
+	@Autowired
+	private BlackListRepository blackListRepository;
 
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
@@ -44,14 +49,27 @@ public class JwtUtil {
 	}
 
 	private String createToken(Map<String, Object> claims, String subject) {
-
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 
 	public Boolean validateToken(String token, UserDetails userDetails) {
+
 		final String username = extractUsername(token);
+		// Delete a token in blacklist if token expired
+		if (isTokenExpired(token)) {
+			if (blackListRepository.findByToken(token) != null) {
+				blackListRepository.deleteByToken(token);
+			}
+		}
+
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+
+	}
+
+	public Boolean validateExpire(String token) {
+		return (!isTokenExpired(token));
+
 	}
 }

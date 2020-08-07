@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.wata.payslip.model.EmployeeEntity;
+import com.wata.payslip.model.entity.EmployeeEntity;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Long> {
+public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Integer> {
 	Page<EmployeeEntity> findByFullNameContaining(String fullName, Pageable pageable);
 
 	@Query("FROM EmployeeEntity")

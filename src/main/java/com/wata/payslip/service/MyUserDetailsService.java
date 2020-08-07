@@ -8,21 +8,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.wata.payslip.employeeDTO.MyUserDetails;
-import com.wata.payslip.model.EmployeeAccount;
-import com.wata.payslip.repository.AuthRepository;
+import com.wata.payslip.model.DTO.MyUserDetails;
+import com.wata.payslip.model.entity.AccountEntity;
+import com.wata.payslip.repository.AccountRepository;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
-	AuthRepository userRepository;
+	AccountRepository userRepository;
 
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-		Optional<EmployeeAccount> user = userRepository.findByUserName(userName);
-
-		user.orElseThrow(() -> new UsernameNotFoundException("Not found: " + userName));
+		Optional<AccountEntity> user = userRepository.findByUserName(userName);
 
 		return user.map(MyUserDetails::new).get();
 	}
