@@ -5,11 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import com.wata.payslip.repository.BlackListRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,8 +16,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
 
 	private String SECRET_KEY = "secret";
-	@Autowired
-	private BlackListRepository blackListRepository;
 
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
@@ -58,11 +53,6 @@ public class JwtUtil {
 
 		final String username = extractUsername(token);
 		// Delete a token in blacklist if token expired
-		if (isTokenExpired(token)) {
-			if (blackListRepository.findByToken(token) != null) {
-				blackListRepository.deleteByToken(token);
-			}
-		}
 
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 

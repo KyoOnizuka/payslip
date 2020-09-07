@@ -1,6 +1,7 @@
 package com.wata.payslip.model.entity;
 
-import java.util.Date;
+import java.sql.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -11,37 +12,36 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "Project")
 public class ProjectEntity {
+
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "typeProject", nullable = false)
+	public TypeProjectEntity typeProject;
+
+	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH }, fetch = FetchType.LAZY)
+	@JoinTable(name = "assignment", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "employee_id"))
+	private Set<EmployeeEntity> employee;
+
+	@OneToMany(mappedBy = "projectEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<WorkEntity> workEntities;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "IdProject")
 	private Integer idProject;
 
-//	@OneToMany(mappedBy = "projectEntity")
-//	private List<TaskEntity> task = new ArrayList<>();
-
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "typeProject", nullable = false)
-	public TypeProjectEntity typeProject;
-
-	@OneToMany(mappedBy = "idProject", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private Set<AssignmentEntity> assignmentEntity;
-
-	@OneToMany(mappedBy = "projectEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private Set<WorkEntity> idWork;
-	/*
-	 * @OneToMany(mappedBy = "projectEntity") private List<AssignmentEntity>
-	 * assigment = new ArrayList<>();
-	 */
-	@Column(name = "NameProject")
-	// @Pattern(regexp = "[A-Za-z0-9 \\t\\n\\x0B\\f\\r\\p{L}]+")
+	@Column(name = "NameProject", columnDefinition = "nvarchar(255)")
 	private String nameProject;
 
 	@Column(name = "StartDate")
@@ -50,31 +50,58 @@ public class ProjectEntity {
 	@Column(name = "EndDate")
 	private Date endDate;
 
-	@Column(name = "Description")
+	@Column(name = "Description", columnDefinition = "nvarchar(255)")
 	private String description;
+	@Column(name = "status", columnDefinition = "nvarchar(255)")
+	private String status;
 
 	public ProjectEntity() {
 
 	}
 
-	public ProjectEntity(Integer id, TypeProjectEntity typeProjectEntity, String nameProject, Date startDate,
-			Date endDate, String description) {
-		super();
-		this.idProject = id;
-//		this.task = task;
-		this.typeProject = typeProjectEntity;
+	public ProjectEntity(TypeProjectEntity typeProject, List<WorkEntity> workEntities, Integer idProject,
+			String nameProject, Date startDate, Date endDate, String description, String status) {
+		this.typeProject = typeProject;
+		this.workEntities = workEntities;
+		this.idProject = idProject;
 		this.nameProject = nameProject;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.description = description;
+		this.status = status;
+
+	}
+
+	public TypeProjectEntity getTypeProject() {
+		return typeProject;
+	}
+
+	public void setTypeProject(TypeProjectEntity typeProject) {
+		this.typeProject = typeProject;
+	}
+
+	public List<WorkEntity> getWorkEntities() {
+		return workEntities;
+	}
+
+	public void setWorkEntities(List<WorkEntity> workEntities) {
+		this.workEntities = workEntities;
+	}
+
+	public Set<EmployeeEntity> getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(Set<EmployeeEntity> workEntities) {
+		this.employee = workEntities;
 	}
 
 	public Integer getIdProject() {
 		return idProject;
 	}
 
-	public void setIdProject(Integer id) {
-		this.idProject = id;
+	public void setIdProject(Integer idProject) {
+		this.idProject = idProject;
 	}
 
 	public String getNameProject() {
@@ -108,21 +135,13 @@ public class ProjectEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-//
-//	public List<TaskEntity> getTask() {
-//		return task;
-//	}
-//
-//	public void setTask(List<TaskEntity> task) {
-//		this.task = task;
-//	}
 
-	public TypeProjectEntity getTypeProject() {
-		return typeProject;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setTypeProject(TypeProjectEntity typeProjectEntity) {
-		this.typeProject = typeProjectEntity;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

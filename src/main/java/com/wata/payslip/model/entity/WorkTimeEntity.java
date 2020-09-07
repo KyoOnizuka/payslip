@@ -1,11 +1,10 @@
 package com.wata.payslip.model.entity;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,44 +12,52 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "workTime")
 public class WorkTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "IdWorktime")
 	private Integer idWorktime;
 
-	@ManyToOne()
-	@JoinColumn(name = "IdEmployee", insertable = false, updatable = false)
-	private EmployeeEntity idEmployee;
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "IdEmployee", nullable = false)
+	private EmployeeEntity employeeEntity;
 
-	@ManyToOne()
-	@JoinColumn(name = "IdWork", insertable = false, updatable = false)
-	private WorkEntity idwork;
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "IdWork", nullable = false)
+	private WorkEntity workEntity;
 
-	@Column(name = "StartTime")
-	private Timestamp startTime;
-
-	@Column(name = "EndTime")
-	private Timestamp endTime;
+	@Column(name = "StartDate", nullable = false)
+	private Date startDate;
 
 	@Column(name = "Hour")
-	private Time hour;
+	private Double hour;
+
+	@Column(name = "Title", columnDefinition = "nvarchar(255)")
+	private String title;
+
+	@Column(name = "Description", columnDefinition = "nvarchar(255)")
+	private String description;
 
 	public WorkTimeEntity() {
 
 	}
 
-	public WorkTimeEntity(Integer idWorktime, EmployeeEntity idEmployee, WorkEntity idwork, Timestamp startTime,
-			Timestamp endTime, Time hour) {
-		super();
+	public WorkTimeEntity(Integer idWorktime, EmployeeEntity employeeEntity, WorkEntity workEntity, Date startDate,
+			String title, String description) {
 		this.idWorktime = idWorktime;
-		this.idEmployee = idEmployee;
-		this.idwork = idwork;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.hour = hour;
+		this.employeeEntity = employeeEntity;
+		this.workEntity = workEntity;
+		this.startDate = startDate;
+		this.title = title;
+		this.description = description;
+
 	}
 
 	public Integer getIdWorktime() {
@@ -61,44 +68,52 @@ public class WorkTimeEntity {
 		this.idWorktime = idWorktime;
 	}
 
-	public WorkEntity getIdwork() {
-		return idwork;
+	public EmployeeEntity getEmployeeEntity() {
+		return employeeEntity;
 	}
 
-	public void setIdwork(WorkEntity idwork) {
-		this.idwork = idwork;
+	public void setEmployeeEntity(EmployeeEntity employeeEntity) {
+		this.employeeEntity = employeeEntity;
 	}
 
-	public Date getStartTime() {
-		return startTime;
+	public WorkEntity getWorkEntity() {
+		return workEntity;
 	}
 
-	public void setStartTime(Timestamp startTime) {
-		this.startTime = startTime;
+	public void setWorkEntity(WorkEntity workEntity) {
+		this.workEntity = workEntity;
 	}
 
-	public Date getEndTime() {
-		return endTime;
+	public Date getStartDate() {
+		return startDate;
 	}
 
-	public void setEndTime(Timestamp endTime) {
-		this.endTime = endTime;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
-	public Time getHour() {
+	public Double getHour() {
 		return hour;
 	}
 
-	public void setHour(Time hour) {
+	public void setHour(Double hour) {
 		this.hour = hour;
 	}
 
-	public EmployeeEntity getIdEmployee() {
-		return idEmployee;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setIdEmployee(EmployeeEntity idEmployee) {
-		this.idEmployee = idEmployee;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

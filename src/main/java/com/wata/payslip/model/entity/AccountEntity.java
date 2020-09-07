@@ -7,19 +7,16 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "useraccount")
 public class AccountEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id", nullable = false)
+
 	private int id;
 	@Column(name = "email", nullable = false)
-	private String userName;
+	private String username;
 	@Column(name = "password", nullable = false)
 	private String password;
 	@Column(name = "active", nullable = false)
@@ -31,7 +28,6 @@ public class AccountEntity {
 	@Column(name = "token", nullable = false)
 	private String token;
 
-
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private EmployeeEntity employeeEntity;
 
@@ -41,12 +37,15 @@ public class AccountEntity {
 
 	public AccountEntity(String email, String password, String token, String roles) {
 
-		this.userName = email;
+		this.username = email;
 		this.password = password;
 		this.token = token;
 		this.roles = roles;
 	}
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id", nullable = false)
 	public int getId() {
 		return id;
 	}
@@ -56,15 +55,14 @@ public class AccountEntity {
 	}
 
 	@Column(name = "email", nullable = false)
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String userName) {
+		this.username = userName;
 	}
 
-	@Column(name = "password", nullable = false)
 	public String getPassword() {
 		return password;
 	}
@@ -73,7 +71,6 @@ public class AccountEntity {
 		this.password = password;
 	}
 
-	@Column(name = "active", nullable = false)
 	public boolean isActive() {
 		return active;
 	}
@@ -82,7 +79,6 @@ public class AccountEntity {
 		this.active = active;
 	}
 
-	@Column(name = "roles", nullable = false)
 	public String getRoles() {
 		return roles;
 	}
@@ -91,7 +87,15 @@ public class AccountEntity {
 		this.roles = roles;
 	}
 
-	@Column(name = "token", nullable = false)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "account")
+	public EmployeeEntity getEmployeeEntity() {
+		return employeeEntity;
+	}
+
+	public void setEmployeeEntity(EmployeeEntity token) {
+		this.employeeEntity = token;
+	}
+
 	public String getToken() {
 		return token;
 	}

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.wata.payslip.model.entity.AccountEntity;
 import com.wata.payslip.model.entity.EmployeeEntity;
 
 @Repository
@@ -17,7 +18,8 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Intege
 	@Query("FROM EmployeeEntity")
 	ArrayList<EmployeeEntity> findAll();
 
-	@Query("FROM EmployeeEntity WHERE fullName LIKE %?1")
-	ArrayList<EmployeeEntity> findByName(String fullName);
+	ArrayList<EmployeeEntity> findByFullName(String fullName);
+
+	EmployeeEntity findByAccount(AccountEntity id);
 
 }

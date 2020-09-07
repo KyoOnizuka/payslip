@@ -1,16 +1,9 @@
 package com.wata.payslip.controller;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import javax.management.relation.RelationNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,63 +14,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wata.payslip.model.DTO.ProjectDTO;
-import com.wata.payslip.model.entity.ProjectEntity;
-import com.wata.payslip.repository.ProjectRepository;
-import com.wata.payslip.service.ProjectService;
+import com.wata.payslip.model.dtos.ProjectDTO;
+import com.wata.payslip.model.dtos.SearchData;
+import com.wata.payslip.service.Interface.IProjectService;
 
 @RestController
-@RequestMapping("/api/employee/dd")
+@RequestMapping("/api/project")
 public class ProjectController {
+	@Autowired
+	private IProjectService iProjectService;
 
-	@Autowired
-	public JavaMailSender emailSender;
-	@Autowired
-	public ProjectRepository projectRepository;
-	@Autowired
-	public ProjectService projectService;
-
-	// Get all employees info
-	@GetMapping("/")
-	public List<ProjectDTO> findAll() {
-		return projectService.getAll();
+	@RequestMapping(value = "/create", headers = "Accept=application/json", method = RequestMethod.POST)
+	public ResponseEntity<Map<String, Object>> createProject(@Validated @RequestBody ProjectDTO dto) {
+		return iProjectService.createProject(dto);
 	}
 
-	// Get employee info base on id
+	@GetMapping("")
+	public ResponseEntity<Map<String, Object>> getAllProjects() {
+		return iProjectService.getAllProject();
+	}
+
 	@GetMapping("/{id}")
-	public ProjectEntity getById(@PathVariable("id") int Id) {
-		return projectRepository.findByIdProject(Id);
+	public ResponseEntity<Map<String, Object>> getProjectById(@PathVariable(value = "id") Integer id) {
+		return iProjectService.getProjectById(id);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteEmployee(@PathVariable(value = "id") int Id) throws RelationNotFoundException {
-		projectRepository.deleteById(Id);
-		return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<Map<String, Object>> deleteProjectById(@PathVariable(value = "id") Integer id) {
+		return iProjectService.deleteProjectById(id);
 	}
 
-	// Update employee info base on id
-	@PutMapping("/{id}")
-	public Map<String, Boolean> update(@PathVariable(value = "id") int Id, @Validated @RequestBody ProjectEntity entity)
-			throws RelationNotFoundException {
-		Optional<ProjectEntity> projectEntity = projectRepository.findById(Id);
-
-		final ProjectEntity updatedEmployee = projectRepository.save(projectEntity);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("success", Boolean.TRUE);
-		return response;
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<?> updateProjectById(@Validated @RequestBody ProjectDTO dto, @PathVariable Integer id) {
+		return iProjectService.updateProjectById(dto, id);
 	}
 
-	@RequestMapping(value = "/project", headers = "Accept=application/json", method = RequestMethod.POST)
-	public ResponseEntity<String> createProject(@Validated @RequestBody ProjectDTO project)
-			throws RelationNotFoundException {
-		return projectService.createProject(project);
+	@RequestMapping(value = "/pages", method = RequestMethod.POST)
+	public ResponseEntity<Map<String, Object>> searchByNameProject(@RequestBody SearchData searchData) {
+		return iProjectService.searchByNameProject(searchData);
 	}
 
-	/*
-	 * @RequestMapping(value = "/pages", method = RequestMethod.POST) public
-	 * ResponseEntity<Map<String, Object>> searchEmployeeByFullName(@RequestBody
-	 * SearchData searchData) { // default currentPage = 0, pageSize = 3 return
-	 * employeeService.searchEmployeeByFullName(searchData); }
-	 */
+	@GetMapping("/employee/{id}")
+	public ResponseEntity<?> getProjectById(@PathVariable("id") int Id) {
+		return iProjectService.getProjectByEmployee(Id);
+	}
 
 }

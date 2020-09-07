@@ -2,28 +2,28 @@ package com.wata.payslip.config.securityConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.wata.payslip.filter.JwtRequestFilter;
-
+@Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserDetailsService myUserDetailsService;
-	@Autowired
-	private JwtRequestFilter jwtRequestFilter;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -37,19 +37,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Override
-	public void configure(WebSecurity web) throws Exception {
-		// web.ignoring().antMatchers("/api/general/pages");
-	}
-
-	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.csrf().disable().authorizeRequests().antMatchers("/api/general/*").permitAll()
-				.antMatchers("/api/employee/*").hasRole("USER") // #4
-				.antMatchers("/api/admin/*").permitAll()
-				// .antMatchers("/api/admin/*").hasRole("ADMIN") // #6
-				.anyRequest().authenticated().and()
-				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);// 7;
+		http.csrf().disable().authorizeRequests().antMatchers("/api/**").permitAll() // #4
+				.anyRequest().authenticated().and().logout().logoutUrl("/api/account/logout")
+				.logoutSuccessUrl("/api/account/successlogout").deleteCookies("JSESSIONID").permitAll().and().cors()
+				.configurationSource(configurationSource());
+
 	}
 
 	@Bean
@@ -57,14 +51,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return NoOpPasswordEncoder.getInstance();
 	}
 
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("http://localhost:4200").allowedMethods("GET", "PUT", "POST",
-						"PATCH", "DELETE", "OPTIONS");
-				;
-			}
-		};
+	private CorsConfigurationSource configurationSource() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.addAllowedOrigin("http://localhost:4200");
+		config.setAllowCredentials(true);
+		config.addAllowedHeader("X-Requested-With");
+		config.addAllowedHeader("Content-Type");
+		config.addAllowedHeader("Authorization");
+		config.addAllowedMethod(HttpMethod.GET);
+		config.addAllowedMethod(HttpMethod.POST);
+		config.addAllowedMethod(HttpMethod.PUT);
+		config.addAllowedMethod(HttpMethod.DELETE);
+		source.registerCorsConfiguration("/**", config);
+		return source;
 	}
+
 }

@@ -8,9 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import com.wata.payslip.model.entity.AccountEntity;
 
 public interface AccountRepository extends JpaRepository<AccountEntity, Integer> {
-	public Optional<AccountEntity> findByUserName(String string);
+	public Optional<AccountEntity> findByUsername(String string);
 
-	public AccountEntity findByTokenAndUserName(String string, String string2);
+	public AccountEntity findByTokenAndUsername(String string, String string2);
+
+	public AccountEntity findByPasswordAndUsername(String string, String string2);
 
 	public AccountEntity findByToken(String token);
 

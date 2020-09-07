@@ -1,6 +1,6 @@
 package com.wata.payslip.model.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,29 +16,35 @@ import javax.persistence.Table;
 @Table(name = "typeProject")
 public class TypeProjectEntity {
 
+	@OneToMany(mappedBy = "typeProject", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<ProjectEntity> projectEntities;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "IdTypeProject")
 	private int id;
 
-	@Column(name = "TypeName")
+	@Column(name = "TypeName", columnDefinition = "nvarchar(255)")
 	private String typeName;
-
-	@OneToMany(mappedBy = "typeProject", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private Set<ProjectEntity> projectEntity;
 
 	public TypeProjectEntity() {
 
 	}
 
 	public TypeProjectEntity(int id, String typeName) {
-		super();
 		this.id = id;
 		this.typeName = typeName;
 
 	}
 
-	@Column(name = "IdTypeProject")
+	public List<ProjectEntity> getProjectEntities() {
+		return projectEntities;
+	}
+
+	public void setProjectEntities(List<ProjectEntity> projectEntities) {
+		this.projectEntities = projectEntities;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -53,6 +59,10 @@ public class TypeProjectEntity {
 
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
+	}
+
+	public void addProject(ProjectEntity projectEntity) {
+		this.projectEntities.add(projectEntity);
 	}
 
 }

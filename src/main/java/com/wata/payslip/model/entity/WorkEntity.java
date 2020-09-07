@@ -14,45 +14,62 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "Work")
 public class WorkEntity {
+
+	@OneToMany(mappedBy = "workEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Set<WorkTimeEntity> workTimeEntity;
+
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "IdProject", nullable = false)
+	private ProjectEntity projectEntity;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "IdWork")
 	private Integer idWork;
 
-	@OneToMany(mappedBy = "idwork", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private Set<WorkTimeEntity> idWorktime;
-
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "IdProject", insertable = false, updatable = false)
-	private ProjectEntity projectEntity;
-
-	@Column(name = "IdProject")
-	private Integer idProject;
-
-	@Column(name = "Summary")
+	@Column(name = "Summary", nullable = false, columnDefinition = "nvarchar(255)")
 	private String summary;
 
-	@Column(name = "Explain")
-	private String explain;
+	@Column(name = "Description", columnDefinition = "nvarchar(255)")
+	private String description;
+
+	@Column(name = "Status")
+	private String status;
 
 	public WorkEntity() {
-		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
-	public WorkEntity(Integer idWork, Set<WorkTimeEntity> idWorktime, ProjectEntity projectEntity, Integer idProject,
-			String summary, String explain) {
-		super();
-		this.idWork = idWork;
-		this.idWorktime = idWorktime;
+	public WorkEntity(Set<WorkTimeEntity> workTimeEntity, ProjectEntity projectEntity, Integer idWork, String summary,
+			String description, String status) {
+		this.workTimeEntity = workTimeEntity;
 		this.projectEntity = projectEntity;
-		this.idProject = idProject;
+		this.idWork = idWork;
 		this.summary = summary;
-		this.explain = explain;
+		this.description = description;
+		this.status = status;
+	}
+
+	public Set<WorkTimeEntity> getWorkTimeEntity() {
+		return workTimeEntity;
+	}
+
+	public void setWorkTimeEntity(Set<WorkTimeEntity> workTimeEntity) {
+		this.workTimeEntity = workTimeEntity;
+	}
+
+	public ProjectEntity getProjectEntity() {
+		return projectEntity;
+	}
+
+	public void setProjectEntity(ProjectEntity projectEntity) {
+		this.projectEntity = projectEntity;
 	}
 
 	public Integer getIdWork() {
@@ -63,14 +80,6 @@ public class WorkEntity {
 		this.idWork = idWork;
 	}
 
-	public Integer getIdProject() {
-		return idProject;
-	}
-
-	public void setIdProject(Integer idProject) {
-		this.idProject = idProject;
-	}
-
 	public String getSummary() {
 		return summary;
 	}
@@ -79,28 +88,20 @@ public class WorkEntity {
 		this.summary = summary;
 	}
 
-	public String getExplain() {
-		return explain;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setExplain(String explain) {
-		this.explain = explain;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public Set<WorkTimeEntity> getIdWorktime() {
-		return idWorktime;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setIdWorktime(Set<WorkTimeEntity> idWorktime) {
-		this.idWorktime = idWorktime;
-	}
-
-	public ProjectEntity getProjectEntity() {
-		return projectEntity;
-	}
-
-	public void setProjectEntity(ProjectEntity projectEntity) {
-		this.projectEntity = projectEntity;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }
