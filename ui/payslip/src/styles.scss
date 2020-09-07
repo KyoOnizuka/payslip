@@ -1,1 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { 
+    height: 100%;
+}
+
+body { 
+    margin: 0; 
+    min-width: 800px;
+    min-height: 800px;
+    font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
+
+.container{
+    max-width: 94%;
+    margin-left: 3%;
+    padding-top: 30px;
+    min-height: 800px;
+}
+
+.title-page {
+    padding-bottom: 5px;
+    padding-left: 20px;
+    font-size: 20pt;
+    border-bottom: 1px solid #DCDCDC;
+    margin-bottom: 40px;
+}
+
+
